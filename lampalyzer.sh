@@ -46,7 +46,7 @@ cprint() {
 
 general_checks() {
     # Check if colors are suppoted by the terminal in use
-    #FIXME always no colors executing like: ssh root@host 'sh' < ./scheck.sh 
+    # FIXME always no colors executing like: ssh root@host 'sh' < lampalizer.sh
     # pseudo-terminal will not be allocated because stdin is not a terminal.
     COLORS=`tput colors 2> /dev/null`
     if [ $? = 0 ] && [ $COLORS -gt 2 ]; then
@@ -60,8 +60,6 @@ general_checks() {
     cprint BLUE "############################"
     echo "[INFO] Local date: "$(date)
     echo "[INFO] Uptime:"$(uptime)
-    #FIXME randomize pool
-    #ntpdate -q de.pool.ntp.org
 }
 
 check_awk() {
@@ -176,7 +174,7 @@ get_plesk_info() {
 }
 
 is_apache_running() {
-    #FIXME are pgrep, pidof portable?
+    # FIXME are pgrep, pidof portable?
     pidof $APACHE_NAME > /dev/null 2>&1
     if [ $? -ne 0 ]; then
         cprint RED "[WARNING] Apache process not found!"
@@ -223,7 +221,7 @@ check_php() {
 }
 
 checks_connections() {
-    #TODO ipv6 support
+    # TODO ipv6 support
     if [ "$OS" = "debian" ]; then
         # Seems that -4 is not supported on redhat systems
         output=`netstat -ntu -4 | tail -n +3 | awk '{print $5}' | cut -d: -f1 | sort | uniq -c | sort -rn | head -3`
@@ -266,6 +264,15 @@ check_mysql() {
     fi
 }
 
+security_checks() {
+    # Performs basics checks against:
+    # CVE-2014-6271
+    env x='() { :;}; echo vulnerable' bash -c "Checking..." 2> /dev/null | grep -q vulnerable;
+    if [ $? -eq 0 ]; then
+            echo "[DANGER] Vulnerable to CVE-2014-6271!"
+    fi
+}
+
 ######################################################
 # Main
 ######################################################
@@ -280,3 +287,4 @@ checks_connections
 check_php
 check_mysql
 check_apache
+security_checks
