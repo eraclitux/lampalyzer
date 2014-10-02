@@ -151,19 +151,19 @@ get_os() {
         else
             OS_VERSION=`cat /etc/debian_version`
         fi
-        echo "[INFO] Debian compatible! "$OS_VERSION
         OS="debian"
         APACHE_NAME="apache2"
     elif [ -f /etc/redhat-release ]; then
         OS="redhat"
         OS_VERSION=`cat /etc/redhat-release`
         APACHE_NAME="httpd"
-        echo "[INFO] Red-Hat compatible! "$OS_VERSION
     else
         cprint YELLOW "[WARNING] Unrecognized operating system."
         OS="unknown"
         APACHE_NAME="apache2"
+        OS_VERSION="unknown"
     fi
+    echo "[INFO] System type: ${OS}. Version: ${OS_VERSION}"
 }
 
 get_plesk_info() {
@@ -190,11 +190,12 @@ check_max_clients() {
         apache_errorlog_path="/var/log/httpd/error_log"
     fi
     if ! [ -f "$apache_log_path" ]; then 
-        #FIXME what todo here?
         cprint YELLOW "[WARNING] Apache's access log not found/readable at "$apache_log_path
+	return
     fi
     if ! [ -f "$apache_errorlog_path" ]; then 
         cprint YELLOW "[WARNING] Apache's error log not found/readable at "$apache_errorlog_path
+	return
     fi
     output=`grep -i maxclients $apache_errolog_path | tail -1`
     if ! [ -z "$output" ]; then

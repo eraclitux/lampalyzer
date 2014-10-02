@@ -16,7 +16,7 @@ Or if you have to use root::
 
     ssh root@target 'echo "rootpass" | sudo -Sv && bash -s' < lampalyzer.sh
 
-Unfortunately colors don't work when the script is used this way :-( (Fixs are welcome!)
+Unfortunately colors don't work when the script is used this way (neither with ssh -t option) :-( (Fixs are welcome!)
 
 Contribute
 ==========
