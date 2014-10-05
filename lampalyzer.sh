@@ -54,9 +54,9 @@ general_checks() {
     else
         COLORS_ENABLED=0
     fi
-    output=`hostname -f`
+    FQDN=`hostname -f`
     cprint BLUE "############################"
-    cprint BLUE "##### "$output
+    cprint BLUE "##### ${FQDN}"
     cprint BLUE "############################"
     echo "[INFO] Local date: "$(date)
     echo "[INFO] Uptime:"$(uptime)
@@ -100,7 +100,7 @@ check_memory() {
     # used - (-/+ buffers/cache)
     MEM_REALLY_USABLE=`free | awk 'NR==3 {print $4}'`
     if [ $MEM_REALLY_USABLE -lt 200000 ]; then
-        cprint YELLOW "[WARNING] Usable memory is low: "$MEM_REALLY_USABLE"KB"
+        cprint YELLOW "[WARNING] Usable memory is low: ${MEM_REALLY_USABLE}KB"
     fi
     output=`vmstat  1 2 | tail -1 | awk '{print $7,$8}'`
     if [ "$output" != "0 0" ];then
@@ -166,11 +166,18 @@ get_os() {
     echo "[INFO] System type: ${OS}. Version: ${OS_VERSION}"
 }
 
-get_plesk_info() {
+plesk_checks() {
     if [ -r /opt/psa/version ]; then
         PLESK_VERSION=`cat /opt/psa/version`
         echo "[INFO] Found Parralles Plesk $PLESK_VERSION"
+    else
+        return
     fi
+    if [ -x /usr/local/psa/bin/admin ]; then
+        PLESK_PSWD=`/usr/local/psa/bin/admin --show-password`
+        echo "[INFO] Plesk admin password: ${PLESK_PSWD}"
+    fi
+    echo "[INFO] https://${FQDN}:8443"
 }
 
 is_apache_running() {
@@ -190,12 +197,12 @@ check_max_clients() {
         apache_errorlog_path="/var/log/httpd/error_log"
     fi
     if ! [ -f "$apache_log_path" ]; then 
-        cprint YELLOW "[WARNING] Apache's access log not found/readable at "$apache_log_path
-	return
+        cprint YELLOW "[WARNING] Apache's access log not found/readable at ${apache_log_path}"
+        return
     fi
     if ! [ -f "$apache_errorlog_path" ]; then 
-        cprint YELLOW "[WARNING] Apache's error log not found/readable at "$apache_errorlog_path
-	return
+        cprint YELLOW "[WARNING] Apache's error log not found/readable at ${apache_errorlog_path}"
+        return
     fi
     output=`grep -i maxclients $apache_errolog_path | tail -1`
     if ! [ -z "$output" ]; then
@@ -284,6 +291,7 @@ check_load
 check_disks_usage
 check_memory
 get_os
+plesk_checks
 checks_connections
 check_php
 check_mysql
