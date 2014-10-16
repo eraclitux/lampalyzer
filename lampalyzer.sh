@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Spot macroscopic problems on LAMP servers.
+# This script lives @ https://github.com/eraclitux/lampalyzer
+
 # Copyright 2014 Andrea Masi eraclitux@gmail.com
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -231,7 +234,7 @@ check_php() {
 checks_connections() {
     # TODO ipv6 support
     if [ "$OS" = "debian" ]; then
-        # Seems that -4 is not supported on redhat systems
+        # Seems that -4 is not supported on RHEL like
         output=`netstat -ntu -4 | tail -n +3 | awk '{print $5}' | cut -d: -f1 | sort | uniq -c | sort -rn | head -3`
         echo "[INFO] Top ipv4 connections:"
     else 
@@ -243,20 +246,11 @@ checks_connections() {
 "
     for line in $output; do
          echo $line
-#        y=`echo $line | awk '{print $5}'`
-#        if [ ${y%?} -gt 90 ]; then
-#            cprint YELLOW "Critical disk usage:"
-#            echo $line
-#        fi
     done
     )
 }
 
-######################################################
-# Mysql
-######################################################
-# mysqladmin -uadmin -p processlist --verbose
-# mysqladmin -uadmin -p extended-status
+#NOTE mysqladmin -uadmin -p processlist --verbose
 check_mysql() {
     echo "### Mysql checks"
     which mysql > /dev/null 2>&1
@@ -269,15 +263,26 @@ check_mysql() {
     pidof mysqld > /dev/null 2>&1
     if ! [ $? -eq 0 ]; then
         cprint YELLOW "[WARNING] Mysql not running!"
+        return
     fi
+    if ! [ -z "$PLESK_PSWD" ]; then
+        limit=`mysql -uadmin -p$(cat /etc/psa/.psa.shadow) -e 'SELECT @@max_connections'`
+        limit=`echo $limit | awk '{print $2}'`
+        actual=`mysqladmin -uadmin -p$(cat /etc/psa/.psa.shadow) extended-status | grep -i max_used | awk '{print $4}'`
+    if [ $actual -ge $limit ]; then
+        cprint RED "[WARNING] Mysql reached max connections."
+    fi
+    fi
+
 }
 
 security_checks() {
+    echo "### Basic security checks"
     # Performs basics checks against:
     # CVE-2014-6271
     env x='() { :;}; echo vulnerable' bash -c "Checking..." 2> /dev/null | grep -q vulnerable;
     if [ $? -eq 0 ]; then
-            echo "[DANGER] Vulnerable to CVE-2014-6271!"
+        cprint YELLOW "[DANGER] Vulnerable to CVE-2014-6271!"
     fi
 }
 

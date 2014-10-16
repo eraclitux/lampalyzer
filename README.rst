@@ -29,4 +29,4 @@ Disclaimer
 
 All trademarks, copyrights and other forms of intellectual property belong to their respective owners.
 
-The author is not affiliated with any cam vendor cited above.
+The author is not affiliated with any vendor cited.
