@@ -277,6 +277,10 @@ check_mysql() {
 }
 
 check_spam () {
+    
+    # Queue limit 
+    QLIMIT=50
+    
     echo "### MailQueue checks"
 
     # Check postfix queue
@@ -284,10 +288,19 @@ check_spam () {
     if [ $? -eq 0 ]; then
         QSIZE=$(postqueue -p | tail -n 1 | cut -d' ' -f5)
 	if [ -n "$QSIZE" ]; then
- 	   	if [ $QSIZE -gt 50 ]; then
-        		cprint YELLOW "[WARNING] Mailqueue is too big - Possible spam "
+ 	   	if [ $QSIZE -gt $QLIMIT ]; then
+        		cprint YELLOW "[WARNING] Postfix mailqueue is too big - Possible spam "
 		fi
 	fi
+    fi
+
+    # Check exim queue
+    which exim > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+    	QSIZE=$(exim -bpc)
+       	if [ $QSIZE -gt $QLIMIT ]; then
+       		cprint YELLOW "[WARNING] Exim mailqueue is too big - Possible spam "
+       	fi
     fi
 
 }
