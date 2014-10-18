@@ -276,6 +276,22 @@ check_mysql() {
 
 }
 
+check_spam () {
+    echo "### MailQueue checks"
+
+    # Check postfix queue
+    which postqueue > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        QSIZE=$(postqueue -p | tail -n 1 | cut -d' ' -f5)
+	if [ -n "$QSIZE" ]; then
+ 	   	if [ $QSIZE -gt 50 ]; then
+        		cprint YELLOW "[WARNING] Mailqueue is too big - Possible spam "
+		fi
+	fi
+    fi
+
+}
+
 security_checks() {
     echo "### Basic security checks"
     # Performs basics checks against:
@@ -301,4 +317,5 @@ checks_connections
 check_php
 check_mysql
 check_apache
+check_spam
 security_checks
