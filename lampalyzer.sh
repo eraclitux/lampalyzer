@@ -303,6 +303,19 @@ check_spam () {
        	fi
     fi
 
+    # Check qmail queue
+    if [ -f /var/qmail/bin/qmail-qstat ]; then
+	QQSIZE=$(/var/qmail/bin/qmail-qstat |head -n 1 | cut -d' ' -f4)
+    elif [ -f /opt/qmail/bin/qmail-qstat ]; then
+	QQSIZE=$(/opt/qmail/bin/qmail-qstat |head -n 1 | cut -d' ' -f4)
+    fi
+
+    if [ -n "$QQSIZE" ]; then
+		if [ $QQSIZE -gt $QLIMIT ]; then
+                	cprint YELLOW "[WARNING] Qmail mailqueue is too big - Possible spam "
+		fi
+    fi
+	
 }
 
 security_checks() {
@@ -329,6 +342,6 @@ plesk_checks
 checks_connections
 check_php
 check_mysql
-check_apache
+#check_apache
 check_spam
 security_checks
