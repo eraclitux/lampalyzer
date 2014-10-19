@@ -14,7 +14,7 @@ If you have to check many machines you can avoid to downlad this script on them 
 
 Or if you have to use root::
 
-    ssh root@target 'echo "rootpass" | sudo -Sv && sh -s' < lampalyzer.sh
+    ssh root@target 'echo "rootpass" | sudo -Sv && sh' < lampalyzer.sh
 
 Unfortunately colors don't work when the script is used this way (neither with ssh -t option) :-( (Fixs are welcome!)
 

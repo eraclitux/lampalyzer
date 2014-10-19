@@ -76,7 +76,6 @@ depency_check() {
     check_awk
 }
 
-
 get_load() {
     LOAD=`cat /proc/loadavg | awk '{print $1}'`
 }
@@ -234,7 +233,7 @@ check_php() {
 checks_connections() {
     # TODO ipv6 support
     if [ "$OS" = "debian" ]; then
-        # Seems that -4 is not supported on RHEL like
+        # Seems that -4 is not supported on RHEL like systems
         output=`netstat -ntu -4 | tail -n +3 | awk '{print $5}' | cut -d: -f1 | sort | uniq -c | sort -rn | head -3`
         echo "[INFO] Top ipv4 connections:"
     else 
@@ -285,7 +284,7 @@ check_spam () {
         QSIZE=$(postqueue -p | tail -n 1 | cut -d' ' -f5)
 	if [ -n "$QSIZE" ]; then
  	   	if [ $QSIZE -gt 50 ]; then
-        		cprint YELLOW "[WARNING] Mailqueue is too big - Possible spam "
+            cprint YELLOW "[WARNING] Mailqueue is too big - Possible spam "
 		fi
 	fi
     fi
@@ -319,3 +318,5 @@ check_mysql
 check_apache
 check_spam
 security_checks
+
+# vim:ts=4:sw=4:sts=4:et
