@@ -207,7 +207,7 @@ check_max_clients() {
         cprint YELLOW "[WARNING] Apache's error log not found/readable at ${apache_errorlog_path}"
         return
     fi
-    output=`grep -i maxclients $apache_errolog_path | tail -1`
+    output=`grep -i maxclients $apache_errorlog_path | tail -1`
     if ! [ -z "$output" ]; then
         cprint YELLOW "[WARNING] Apache has reached MaxClients!"
         echo $output
