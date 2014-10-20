@@ -290,10 +290,14 @@ check_spam () {
 	if [ -n "$QSIZE" ]; then
  	   	if [ $QSIZE -gt $QLIMIT ]; then
         		cprint YELLOW "[WARNING] Postfix mailqueue is too big - Possible spam "
+		else
+			echo "[INFO] Postfix messages in queue: $QSIZE"
 		fi
+		
 	fi
     else
 	QSIZE=0
+	echo "[INFO] Postfix messages in queue: $QSIZE"
     fi
 
     # Check exim queue
@@ -302,7 +306,9 @@ check_spam () {
     	QSIZE=$(exim -bpc)
        	if [ $QSIZE -gt $QLIMIT ]; then
        		cprint YELLOW "[WARNING] Exim mailqueue is too big - Possible spam "
-       	fi
+       	else
+		echo "[INFO] Exim messages in queue: $QSIZE"
+	fi
     fi
 
     # Check qmail queue
@@ -315,8 +321,11 @@ check_spam () {
     if [ -n "$QQSIZE" ]; then
 		if [ $QQSIZE -gt $QLIMIT ]; then
                 	cprint YELLOW "[WARNING] Qmail mailqueue is too big - Possible spam "
+		else
+			echo "[INFO] Qmail messages in queue: $QSIZE"
 		fi
     fi
+
 	
 }
 
