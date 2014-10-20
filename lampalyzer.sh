@@ -293,11 +293,10 @@ check_spam () {
 		else
 			echo "[INFO] Postfix messages in queue: $QSIZE"
 		fi
-		
+    	else
+		QSIZE=0
+		echo "[INFO] Postfix messages in queue: $QSIZE"
 	fi
-    else
-	QSIZE=0
-	echo "[INFO] Postfix messages in queue: $QSIZE"
     fi
 
     # Check exim queue
