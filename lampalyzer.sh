@@ -292,6 +292,8 @@ check_spam () {
         		cprint YELLOW "[WARNING] Postfix mailqueue is too big - Possible spam "
 		fi
 	fi
+    else
+	QSIZE=0
     fi
 
     # Check exim queue
@@ -342,6 +344,6 @@ plesk_checks
 checks_connections
 check_php
 check_mysql
-#check_apache
+check_apache
 check_spam
 security_checks
