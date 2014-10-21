@@ -207,7 +207,7 @@ check_max_clients() {
         cprint YELLOW "[WARNING] Apache's error log not found/readable at ${apache_errorlog_path}"
         return
     fi
-    output=`grep -i maxclients $apache_errolog_path | tail -1`
+    output=`grep -i maxclients $apache_errorlog_path | tail -1`
     if ! [ -z "$output" ]; then
         cprint YELLOW "[WARNING] Apache has reached MaxClients!"
         echo $output
@@ -289,7 +289,7 @@ check_spam () {
         QSIZE=$(postqueue -p | tail -n 1 | cut -d' ' -f5)
 	if [ -n "$QSIZE" ]; then
  	   	if [ $QSIZE -gt $QLIMIT ]; then
-        		cprint YELLOW "[WARNING] Postfix mailqueue is too big - Possible spam "
+        		cprint YELLOW "[WARNING] Postfix mailqueue is too big. $QSIZE messages in queue. Possible spam "
 		else
 			echo "[INFO] Postfix messages in queue: $QSIZE"
 		fi
@@ -304,7 +304,7 @@ check_spam () {
     if [ $? -eq 0 ]; then
     	QSIZE=$(exim -bpc)
        	if [ $QSIZE -gt $QLIMIT ]; then
-       		cprint YELLOW "[WARNING] Exim mailqueue is too big - Possible spam "
+       		cprint YELLOW "[WARNING] Exim mailqueue is too big. $QSIZE messages in queue. Possible spam "
        	else
 		echo "[INFO] Exim messages in queue: $QSIZE"
 	fi
@@ -319,9 +319,9 @@ check_spam () {
 
     if [ -n "$QQSIZE" ]; then
 		if [ $QQSIZE -gt $QLIMIT ]; then
-                	cprint YELLOW "[WARNING] Qmail mailqueue is too big - Possible spam "
+                	cprint YELLOW "[WARNING] Qmail mailqueue is too big. $QQSIZE messages in queue. Possible spam "
 		else
-			echo "[INFO] Qmail messages in queue: $QSIZE"
+			echo "[INFO] Qmail messages in queue: $QQSIZE"
 		fi
     fi
 
