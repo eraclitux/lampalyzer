@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 # Spot macroscopic problems on LAMP servers.
 # This script lives @ https://github.com/eraclitux/lampalyzer
