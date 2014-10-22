@@ -2,7 +2,7 @@
 LAMPalyzer
 ==========
 
-Simple script to check for macroscopic problems on a *LAMP* server.
+Simple script to spot macroscopic problems on a **LAMP** server.
 This is a **readonly** procedure, it doesn't do any modification on machine.
 Tries to depend only on basic linux tools and be POSIX compliant to maximize portability.
 
@@ -23,6 +23,10 @@ Contribute
 Pull requests that add new checks or fix issues are welcome, encouraged, and credited.
 
 The only important thing is to follow these instructions to mantain POSIX compatibility https://wiki.ubuntu.com/DashAsBinSh
+
+Contributors
+------------
+`m4oc <https://github.com/m4oc>`_ added queue check for various MTAs
 
 Disclaimer
 ==========

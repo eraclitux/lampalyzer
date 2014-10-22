@@ -285,7 +285,7 @@ check_spam () {
         QSIZE=$(postqueue -p | tail -n 1 | cut -d' ' -f5)
         if [ -n "$QSIZE" ]; then
             if [ $QSIZE -gt $QLIMIT ]; then
-                    cprint YELLOW "[WARNING] Postfix mailqueue is too big. $QSIZE messages in queue. Possible spam "
+                cprint YELLOW "[WARNING] Postfix mailqueue is too big. $QSIZE messages in queue. Possible spam "
             else
                 echo "[INFO] Postfix messages in queue: $QSIZE"
             fi
