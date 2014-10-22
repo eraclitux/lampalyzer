@@ -276,19 +276,50 @@ check_mysql() {
 }
 
 check_spam () {
+    # Queue limit 
     echo "### MailQueue checks"
-
+    QLIMIT=50
     # Check postfix queue
     which postqueue > /dev/null 2>&1
     if [ $? -eq 0 ]; then
         QSIZE=$(postqueue -p | tail -n 1 | cut -d' ' -f5)
-	if [ -n "$QSIZE" ]; then
- 	   	if [ $QSIZE -gt 50 ]; then
-            cprint YELLOW "[WARNING] Mailqueue is too big - Possible spam "
-		fi
-	fi
+        if [ -n "$QSIZE" ]; then
+            if [ $QSIZE -gt $QLIMIT ]; then
+                    cprint YELLOW "[WARNING] Postfix mailqueue is too big. $QSIZE messages in queue. Possible spam "
+            else
+                echo "[INFO] Postfix messages in queue: $QSIZE"
+            fi
+        else
+            QSIZE=0
+            echo "[INFO] Postfix messages in queue: $QSIZE"
+        fi
     fi
 
+    # Check exim queue
+    which exim > /dev/null 2>&1
+    if [ $? -eq 0 ]; then
+        QSIZE=$(exim -bpc)
+        if [ $QSIZE -gt $QLIMIT ]; then
+            cprint YELLOW "[WARNING] Exim mailqueue is too big. $QSIZE messages in queue. Possible spam "
+        else
+            echo "[INFO] Exim messages in queue: $QSIZE"
+        fi
+    fi
+
+    # Check qmail queue
+    if [ -f /var/qmail/bin/qmail-qstat ]; then
+        QQSIZE=$(/var/qmail/bin/qmail-qstat |head -n 1 | cut -d' ' -f4)
+    elif [ -f /opt/qmail/bin/qmail-qstat ]; then
+        QQSIZE=$(/opt/qmail/bin/qmail-qstat |head -n 1 | cut -d' ' -f4)
+    fi
+
+    if [ -n "$QQSIZE" ]; then
+        if [ $QQSIZE -gt $QLIMIT ]; then
+            cprint YELLOW "[WARNING] Qmail mailqueue is too big. $QQSIZE messages in queue. Possible spam "
+        else
+            echo "[INFO] Qmail messages in queue: $QQSIZE"
+        fi
+    fi
 }
 
 security_checks() {
